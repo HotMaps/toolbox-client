@@ -10,6 +10,7 @@ export class DataInteractionClass {
   layer_type: string;
   cm_id?: string;
   download_url?: string;
+  info_url?: string;
   type_of_layer?: string;
   description?: string;
   custom_symbology?: any;
