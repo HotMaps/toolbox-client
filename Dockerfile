@@ -1,9 +1,18 @@
+FROM node:10 AS builder
+COPY package.json package-lock.json ./
+RUN npm install 
+## Storing node modules on a separate layer will prevent unnecessary npm installs at each build
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD false
+RUN npm i && mkdir /ng-app && mv ./node_modules ./ng-app
+WORKDIR /ng-app
+COPY ./ ./
+# building with the --prod flag doesn't produce a binary.
+RUN cd src/app && $(npm bin)/ng build --output-path=dist
+
 FROM nginx
 
-COPY dist /usr/share/nginx/html
+COPY --from=builder /ng-app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-
 
 EXPOSE 80
 
